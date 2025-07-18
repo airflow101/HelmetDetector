@@ -3,3 +3,4 @@ opencv-python
 streamlit-webrtc
 torch
 av
+ultralytics
