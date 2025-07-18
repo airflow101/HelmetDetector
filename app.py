@@ -70,7 +70,11 @@ camera_stream = streamlit_webrtc.webrtc_streamer(
     key="webcam",
     video_processor_factory=VideoProcessor,
     sendback_audio=False,
-    async_processing=True,
+    async_processing=True, 
+    media_stream_constraints={
+        "video": {"width": 640, "height": 480, "frameRate": {"ideal" : 10}},
+        "audio": False,
+    },
     )
 
 text_display = st.empty()
