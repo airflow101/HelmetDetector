@@ -4,3 +4,10 @@ streamlit-webrtc
 torch
 av
 ultralytics
+
+# Plotting --------------------------------------------------------------------
+pandas>=1.1.4
+seaborn>=0.11.0
+
+# Deploy ----------------------------------------------------------------------
+setuptools>=70.0.0 # Snyk vulnerability fix
