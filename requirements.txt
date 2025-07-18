@@ -1,5 +1,5 @@
 # Base ----------------------------------------
-cv2
+opencv-python
 streamlit-webrtc
 torch
 av
