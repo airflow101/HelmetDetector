@@ -5,7 +5,6 @@ import torch
 import av
 import threading
 import time
-import ultralytics
 
 st.title("(Orange) Safety Helmet Detector")
 

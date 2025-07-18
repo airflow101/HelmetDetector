@@ -1,0 +1,5 @@
+# Base ----------------------------------------
+cv2
+streamlit-webrtc
+torch
+av
