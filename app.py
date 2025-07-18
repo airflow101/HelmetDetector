@@ -21,7 +21,7 @@ class VideoProcessor(streamlit_webrtc.VideoTransformerBase):
         # Assuming self.model is properly initialized here
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-        img = frame.to_ndarray(format="bgr24")
+        img = frame.reformat(frame.width / 4, frame.height / 4).to_ndarray(format="bgr24")
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
         results = model(img_rgb)
@@ -50,16 +50,16 @@ class VideoProcessor(streamlit_webrtc.VideoTransformerBase):
                 cv2.rectangle(img, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
 
                 # Put label and confidence score
-                label = f"{name} {conf:.2f}"
-                cv2.putText(
-                    img,
-                    label,
-                    (x1, y1 - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    (0, 255, 0),
-                    2,
-                )
+                # label = f"{name} {conf:.2f}"
+                # cv2.putText(
+                #     img,
+                #     label,
+                #     (x1, y1 - 10),
+                #     cv2.FONT_HERSHEY_SIMPLEX,
+                #     0.5,
+                #     (0, 255, 0),
+                #     2,
+                # )
         with lock:
             self.helmet_amount = helmet
 
