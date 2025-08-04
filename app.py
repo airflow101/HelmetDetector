@@ -6,13 +6,12 @@ import av
 import threading
 import time
 
-st.title("(Orange) Safety Helmet Detector")
+st.title("Person Detector")
 
 # Load the YOLOv5 model
 # Replace 'yolov5s.pt' with your trained/custom model path if applicable
 model_path = 'last.pt'
-model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path)
-
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='yolov5s.pt')
 lock = threading.Lock()
 
 class VideoProcessor(streamlit_webrtc.VideoTransformerBase):
@@ -21,7 +20,7 @@ class VideoProcessor(streamlit_webrtc.VideoTransformerBase):
         # Assuming self.model is properly initialized here
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-        img = frame.reformat(frame.width / 4, frame.height / 4).to_ndarray(format="bgr24")
+        img = frame.reformat(frame.width, frame.height).to_ndarray(format="bgr24")
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
         results = model(img_rgb)
@@ -42,7 +41,7 @@ class VideoProcessor(streamlit_webrtc.VideoTransformerBase):
                 int(row["class"]),
                 row["name"],
             )
-            if(0.5<conf):
+            if(0.5<conf and name=="person"):
                 # Increment helmet
                 helmet += 1
 
@@ -50,16 +49,16 @@ class VideoProcessor(streamlit_webrtc.VideoTransformerBase):
                 cv2.rectangle(img, (x1, y1), (x2, y2), color=(0, 255, 0), thickness=2)
 
                 # Put label and confidence score
-                # label = f"{name} {conf:.2f}"
-                # cv2.putText(
-                #     img,
-                #     label,
-                #     (x1, y1 - 10),
-                #     cv2.FONT_HERSHEY_SIMPLEX,
-                #     0.5,
-                #     (0, 255, 0),
-                #     2,
-                # )
+                label = f"{name} {conf:.2f}"
+                cv2.putText(
+                    img,
+                    label,
+                    (x1, y1 - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (0, 255, 0),
+                    2,
+                )
         with lock:
             self.helmet_amount = helmet
 
@@ -72,7 +71,7 @@ camera_stream = streamlit_webrtc.webrtc_streamer(
     sendback_audio=False,
     async_processing=True, 
     media_stream_constraints={
-        "video": {"width": 640, "height": 480, "frameRate": {"ideal" : 10}},
+        "video": {"width": 1280, "height": 720},
         "audio": False,
     },
     )
@@ -82,5 +81,5 @@ text_display = st.empty()
 while camera_stream.state.playing:
     time.sleep(0.1)
     with lock:
-        text_display.write("Amount of helmet: " \
+        text_display.write("Amount of person: " \
                            + str(camera_stream.video_processor.helmet_amount))
